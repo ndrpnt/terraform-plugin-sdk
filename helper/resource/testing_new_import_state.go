@@ -60,11 +60,13 @@ func testStepNewImportState(t testing.T, c TestCase, helper *plugintest.Helper, 
 	}
 	importWd := helper.RequireNewWorkingDir(t)
 	defer importWd.Close()
-	importWd.RequireSetConfig(t, step.Config)
+	err = importWd.SetConfig(step.Config)
+	if err != nil {
+		t.Fatalf("Error setting test config: %s", err)
+	}
 
 	err = runProviderCommand(t, func() error {
-		importWd.RequireInit(t)
-		return nil
+		return importWd.Init()
 	}, importWd, c.ProviderFactories)
 	if err != nil {
 		t.Fatalf("Error running init: %s", err)
